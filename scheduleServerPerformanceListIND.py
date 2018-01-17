@@ -1,10 +1,10 @@
 from Library import RequiredAPI;
 from datetime import datetime,timedelta
-import CycleCollectionCountForDevicesES,ResponseCycleCountForDevicesDC
+import CycleCollectionCountForDevicesESIND,ResponseCycleCountForDevicesDCIND
 import logging
 
 NCE_IP="172.16.2.112"
-siteName="US"
+siteName="IND"
 datefmt = "%Y-%m-%d"
 timefmt = "%I:%M:%p"
 timefmt1= "%H:%M"
@@ -46,13 +46,13 @@ for input in inputs:
     time.sleep((Duration*60)+600)
 
     # # import subprocess
-    # # #python CycleCollectionCountForDevicesES.py requestId,numberofDevices,interval,ESnewDate,EndDate
-    # # output = subprocess.call(["python", "CycleCollectionCountForDevicesES.py", str(requestId), str(NumberOfDevices),str(TimeInterval),ESnewDate,ESendDate])
+    # # #python CycleCollectionCountForDevicesESIND.py requestId,numberofDevices,interval,ESnewDate,EndDate
+    # # output = subprocess.call(["python", "CycleCollectionCountForDevicesESIND.py", str(requestId), str(NumberOfDevices),str(TimeInterval),ESnewDate,ESendDate])
     logging.info("DC Report Generation is inprogress........")
-    ResponseCycleCountForDevicesDC.findMissedCycleInDC(requestId,int(NumberOfDevices), NumberofCyclePerDevice)
+    ResponseCycleCountForDevicesDCIND.findMissedCycleInDC(requestId,int(NumberOfDevices), NumberofCyclePerDevice)
 
     logging.info("NCE Report Generation is inprogress........")
-    CycleCollectionCountForDevicesES.generateReport(requestId,NumberOfDevices,NumberofCyclePerDevice,ESnewDate,ESendDate)
+    CycleCollectionCountForDevicesESIND.generateReport(requestId,NumberOfDevices,NumberofCyclePerDevice,ESnewDate,ESendDate)
 
     time.sleep(60)
 
