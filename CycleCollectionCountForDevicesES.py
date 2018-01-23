@@ -1,15 +1,18 @@
 from Library import RequiredAPI;
 import MySQLdb
 import logging
-logging.basicConfig(filename='MissingCycle.log',level=logging.INFO,format='')
+logging.basicConfig(filename='MissingCycleUS.log',level=logging.INFO,format='')
 
 NCE_IP="172.16.2.112"
 siteName="US"
-tableName='meridian_data'
 Database_IP="172.16.2.49"
+databaseName="Scalability"
+tableName='meridian_data_US'
+username="root"
+password="FixStream"
 
 def createTable():
-    db = MySQLdb.connect(Database_IP, "root", "FixStream", "Test")
+    db = MySQLdb.connect(Database_IP, username, password, databaseName)
     cursor = db.cursor()
     createQuery = "create table " + tableName + " (deviceID varchar(50),metricName varchar(50),instanceType varchar(30),instanceName varchar(50),metricValue float,date_Time Timestamp);"
     cursor.execute(createQuery)
@@ -17,7 +20,7 @@ def createTable():
     db.close()
 
 def dropTable():
-    db = MySQLdb.connect(Database_IP, "root", "FixStream", "Test")
+    db = MySQLdb.connect(Database_IP, username, password, databaseName)
     cursor = db.cursor()
     Query = "drop table " + tableName+";"
     cursor.execute(Query)
@@ -26,9 +29,9 @@ def dropTable():
 
 def checkTableExistanceAndCreate():
     # Open database connection
-    db = MySQLdb.connect(Database_IP, "root", "FixStream", "Test")
+    db = MySQLdb.connect(Database_IP, username, password, databaseName)
     cursor = db.cursor()
-    query = "show table status like '"+tableName +"';"
+    query = "show table status like '"+ tableName +"';"
     cursor.execute(query)
     result = cursor.fetchone()
     db.close()
@@ -40,10 +43,10 @@ def checkTableExistanceAndCreate():
 
 def insertBulkData(data):
     # Open database connection
-    db = MySQLdb.connect(Database_IP, "root", "FixStream", "Test")
+    db = MySQLdb.connect(Database_IP, username, password, databaseName)
     # prepare a cursor object using cursor() method
     cursor = db.cursor()
-    query = "insert into meridian_data (deviceID,metricName,instanceType,instanceName,metricValue,date_Time) values (%s, %s, %s, %s,%s, %s)"
+    query = "insert into "+ tableName +" (deviceID,metricName,instanceType,instanceName,metricValue,date_Time) values (%s, %s, %s, %s,%s, %s)"
     cursor.executemany(query, data)
     db.commit()
     db.close()
@@ -51,9 +54,9 @@ def insertBulkData(data):
 def findMissingCycleDevices():
     logging.info("Result ::::::::::::::::::::::::::::::::::::")
     logging.info("Number of Expected Cycle per device: " + str(expectedCyclePerDevice))
-    db = MySQLdb.connect(Database_IP, "root", "FixStream", "Test")
+    db = MySQLdb.connect(Database_IP, username, password, databaseName)
     cursor = db.cursor()
-    query = "select deviceID,metricName,instanceType,count(*) from meridian_data where date_time between '%s' and '%s' group by deviceID,metricName,instanceType having count(*) != %d" % (
+    query = "select deviceID,metricName,instanceType,count(*) from "+ tableName +" where date_time between '%s' and '%s' group by deviceID,metricName,instanceType having count(*) != %d" % (
     startDate, endDate, expectedCyclePerDevice)
 
     cursor.execute(query)

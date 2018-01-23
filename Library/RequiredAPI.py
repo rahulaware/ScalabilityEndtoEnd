@@ -174,13 +174,10 @@ def getscheduledDevicesForPerformance(NCE_IP,token,orgId, siteId, requestID):
         deviceNameList.append(str(device).split(".")[0])
     discovery_response = getscheduledDeviceswithdeviceId(NCE_IP, token, orgId, siteId)
     deviceIdList=[]
-    deviceHostNameList = []
     for key in discovery_response:
         for device in discovery_response[key]:
             if device["hostName"] in deviceNameList:
                 deviceIdList.append(device["deviceId"])
-                deviceHostNameList.append(device["hostName"])
-    print "----------------",deviceHostNameList
     return deviceIdList
 
 getPerformancedatafordeviceURL='/api/v2/metrics/server/timeSeries'
