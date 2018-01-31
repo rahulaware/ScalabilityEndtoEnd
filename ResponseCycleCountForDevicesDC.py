@@ -1,8 +1,5 @@
 import logging
 
-logging.basicConfig(filename='MissingCycle.log',level=logging.INFO,format='')
-logging.getLogger("paramiko").setLevel(logging.ERROR)
-
 def connectToDC():
     try:
         import paramiko
@@ -12,7 +9,7 @@ def connectToDC():
         ssh.connect(DC_IP, port, username, password)
         return ssh;
     except Exception as e:
-        logging.info("Exception is :",e)
+        logging.info("Exception is :"+e)
         return False;
 
 def checkReuqestCreatedorNot():
@@ -27,45 +24,49 @@ def checkReuqestCreatedorNot():
         db.close()
         return data
     except Exception as e:
-        logging.info("Exception is :", e)
+        logging.info("Exception is :"+e)
         return False;
 
-def findMissedCycleInDC(request_id1,NumberofDevices,expectedCycleperDevice):
+def findMissedCycleInDC(request_id1,NumberofDevices,expectedCycleperDevice,DCIPTemp,portTemp,usernameTemp,passwordTemp):
     #Input RequestID and expected Cycle per Device
-    global DC_IP,port,username,password,request_id
-    DC_IP="172.16.2.115"
-    port = 22
-    username = 'root'
-    password = 'FixStream'
-    request_id=request_id1
-    TotalCycle=NumberofDevices*expectedCycleperDevice
-    ssh =  connectToDC()
-    if ssh != False:
-        data= checkReuqestCreatedorNot()
-        if data:
-            logging.info("Result ::::::::::::::::::::::::::::::::::::")
-            logging.info("Expected Cycle per device:"+str(expectedCycleperDevice))
-            NumberofDevicewithMissedCycle = 0
-            NumberofMissedCycle = 0
-            logging.info("Devices with Missed Cycle:")
-            for ip in data:
-                stdin = stdout = stderr = None
-                NumberofCycle = 0
-                stdin, stdout, stderr = ssh.exec_command(
-                    "zgrep %s /opt/meridian/dc/var/fsdc/logs/_dc_response* | grep '\"%s\"'" % (request_id, ip[0]))
-                NumberofCycle = len(stdout.readlines())
-                if NumberofCycle != expectedCycleperDevice:
-                    NumberofDevicewithMissedCycle = NumberofDevicewithMissedCycle + 1
-                    logging.info(ip[0] + "*********" + str(NumberofCycle))
-                    NumberofMissedCycle = NumberofMissedCycle + (expectedCycleperDevice-NumberofCycle)
+    try:
+        global DC_IP,port,username,password,request_id
+        DC_IP = DCIPTemp
+        port = portTemp
+        username = usernameTemp
+        password = passwordTemp
+        request_id=request_id1
+        TotalCycle=NumberofDevices*expectedCycleperDevice
+        ssh =  connectToDC()
+        if ssh != False:
+            data= checkReuqestCreatedorNot()
+            if data:
+                logging.info("Result ::::::::::::::::::::::::::::::::::::")
+                logging.info("Expected Cycle per device:"+str(expectedCycleperDevice))
+                NumberofDevicewithMissedCycle = 0
+                NumberofMissedCycle = 0
+                logging.info("Devices with Missed Cycle:")
+                for ip in data:
+                    stdin = stdout = stderr = None
+                    NumberofCycle = 0
+                    stdin, stdout, stderr = ssh.exec_command(
+                        "zgrep %s /opt/meridian/dc/var/fsdc/logs/_dc_response* | grep '\"%s\"'" % (request_id, ip[0]))
+                    NumberofCycle = len(stdout.readlines())
+                    if NumberofCycle != expectedCycleperDevice:
+                        NumberofDevicewithMissedCycle = NumberofDevicewithMissedCycle + 1
+                        logging.info(ip[0] + "*********" + str(NumberofCycle))
+                        NumberofMissedCycle = NumberofMissedCycle + (expectedCycleperDevice-NumberofCycle)
 
-            logging.info("Number of Devices with Missed Cycle : "+str(NumberofDevicewithMissedCycle))
-            logging.info("Number of missed Cycle : "+str(NumberofMissedCycle))
-            logging.info("Failed Percent: "+str((float)(NumberofMissedCycle * 100) / TotalCycle))
-            ssh.close()
+                logging.info("Number of Devices with Missed Cycle : "+str(NumberofDevicewithMissedCycle))
+                logging.info("Number of missed Cycle : "+str(NumberofMissedCycle))
+                output=(float)(NumberofMissedCycle * 100) / TotalCycle
+                logging.info("Failed Percent: "+str(output))
+                ssh.close()
+                return output
+            else:
+                logging.info("Request Id not exist:"+request_id)
         else:
-            logging.info("Request Id not exist:"+request_id)
-    else:
-        logging.info("Failed")
-
+            logging.info("SSH Failed")
+    except Exception as e:
+        logging.info("ResponseCycleCountForDevicesDC Exception is :"+e)
 #findMissedCycleInDC("3c7f7212-420f-4246-8022-39670b280bf5",100,7)
