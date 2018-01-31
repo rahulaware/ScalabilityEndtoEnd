@@ -1,5 +1,5 @@
 #sh createDevicesOnDC.sh
 
-#python scheduleDiscoveryUS.py >> discoveryLog.txt 
+#python scheduleDiscoveryIND.py >> discoveryLog.txt
 
 python scheduleServerPerformanceListIND.py
