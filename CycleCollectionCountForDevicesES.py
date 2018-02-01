@@ -11,7 +11,7 @@ def createTable():
         logging.info(tableName + " is created")
         db.close()
     except Exception as e:
-        logging.info("CycleCollectionCountForDevicesES Exception is :"+e)
+        logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
 def dropTable():
     try:
         db = MySQLdb.connect(Database_IP, username, password, databaseName)
@@ -21,7 +21,7 @@ def dropTable():
         logging.info(tableName + " is dropped")
         db.close()
     except Exception as e:
-        logging.info("CycleCollectionCountForDevicesES Exception is :" + e)
+        logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
 def checkTableExistanceAndCreate():
     try:
         # Open database connection
@@ -37,7 +37,7 @@ def checkTableExistanceAndCreate():
             dropTable()
             createTable()
     except Exception as e :
-        logging.info("CycleCollectionCountForDevicesES Exception is :" + e)
+        logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
 
 def insertBulkData(data):
     try:
@@ -50,7 +50,7 @@ def insertBulkData(data):
         db.commit()
         db.close()
     except Exception as e:
-        logging.info("CycleCollectionCountForDevicesES Exception is :" + e)
+        logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
 
 def findMissingCycleDevices():
     try:
@@ -77,7 +77,7 @@ def findMissingCycleDevices():
         logging.info("DCandNCE Failed Percent:%s ",output)
         return output
     except Exception as e:
-        logging.info("CycleCollectionCountForDevicesES Exception is :" + e)
+        logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
 
 def generateReport(requestId1,numberOfDevices1,NumberofCyclePerDevice,startDate1,endDate1,NCE_IPTemp,siteNameTemp,Database_IPTemp,databaseNameTemp,tableNameTemp,usernameTemp,passwordTemp):
     try:
@@ -124,4 +124,4 @@ def generateReport(requestId1,numberOfDevices1,NumberofCyclePerDevice,startDate1
         output=findMissingCycleDevices()
         return float(output)
     except Exception as e:
-        logging.info("CycleCollectionCountForDevicesES Exception is :" + e)
+        logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))

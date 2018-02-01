@@ -9,7 +9,7 @@ def connectToDC():
         ssh.connect(DC_IP, port, username, password)
         return ssh;
     except Exception as e:
-        logging.info("Exception is :"+e)
+        logging.info("ResponceCycleCountDC Exception is :" + str(e))
         return False;
 
 def checkReuqestCreatedorNot():
@@ -24,7 +24,7 @@ def checkReuqestCreatedorNot():
         db.close()
         return data
     except Exception as e:
-        logging.info("Exception is :"+e)
+        logging.info("ResponceCycleCountDC Exception is :" + str(e))
         return False;
 
 def findMissedCycleInDC(request_id1,NumberofDevices,expectedCycleperDevice,DCIPTemp,portTemp,usernameTemp,passwordTemp):
@@ -68,5 +68,5 @@ def findMissedCycleInDC(request_id1,NumberofDevices,expectedCycleperDevice,DCIPT
         else:
             logging.info("SSH Failed")
     except Exception as e:
-        logging.info("ResponseCycleCountForDevicesDC Exception is :"+e)
+        logging.info("ResponceCycleCountDC Exception is :" + str(e))
 #findMissedCycleInDC("3c7f7212-420f-4246-8022-39670b280bf5",100,7)

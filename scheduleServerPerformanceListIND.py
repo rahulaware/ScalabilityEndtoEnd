@@ -23,9 +23,9 @@ timefmt1= "%H:%M"
 ft = Font(color=colors.RED)
 Duration=30
 
-inputs=[[200,3],[500,3],[1000,3],[1200,3],[1500,3],[200,5],[500,5],[1000,5],[1200,5],[1500,5],[200,10],[500,10],[1000,10],[1200,10],[1500,10]]
+inputs=[[200,2],[200,3],[200,5],[200,7],[200,10],[200,15],[500,2],[500,3],[500,5],[500,7],[500,10],[500,15],[750,2],[750,3],[750,5],[750,7],[750,10],[750,15],[1000,2],[1000,3],[1000,5],[1000,7],[1000,10],[1000,15],[1500,2],[1500,3],[1500,5],[1500,7],[1500,10],[1500,15]]
 
-outputLogFile='MissingCycleUS.log'
+outputLogFile='MissingCycleIND.log'
 outputFile="Book2.xlsx"
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 logging.getLogger("paramiko").setLevel(logging.ERROR)
@@ -117,7 +117,7 @@ for input in inputs:
                     SiteSheet[NCEoutputExcel[key]].font=ft
                 Excel.save(outputFile)
             except Exception as e:
-                logging.info("ServerPerformance Exception is :"+e)
+                logging.info("scheduleServerPerformance Exception is :" + str(e))
         else:
             logging.info(key+" key is not present in DC/NCE output Excel")
 
@@ -125,4 +125,4 @@ for input in inputs:
         res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId)
         logging.info("Server Performance Scheduled request %s deleted with %s Devices and %s min interval",requestId,NumberOfDevices, TimeInterval)
     except Exception as e:
-        logging.info("scheduleServerPerformance Exception is :" + e)
+        logging.info("scheduleServerPerformance Exception is :" + str(e))
