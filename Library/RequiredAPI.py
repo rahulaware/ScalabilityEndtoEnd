@@ -55,8 +55,14 @@ def getOrgAndSite(NCE_IP,token,site):
     return orgId[0], siteId[0]
 
 get_all_scheduledRequest="/api/v2/scheduler/status/"
-def get_all_scheduledDiscoveryRequest(NCE_IP,token, orgId, siteId):
-    request_append = "all?page=1&size=25&sort=startDate,DESC&status=IN_PROGRESS&triggerType=NETWORK_DISCOVERY"
+def get_all_scheduledDiscoveryRequest(NCE_IP,token, orgId, siteId,typeOfRequest):
+    if "SERVER_MONITORING":
+        request_append='all?page=1&size=25&sort=status,DESC&triggerType ='+typeOfRequest
+    if "NETWORK_DISCOVERY" :
+        request_append = "all?page=1&size=25&sort=startDate,DESC&status=IN_PROGRESS&triggerType="+typeOfRequest
+    if "PCAP_COLLECTION":
+        request_append = "all?page=1&size=25&sort=status,DESC&triggerType=" + typeOfRequest
+
     url="https://"+NCE_IP+get_all_scheduledRequest+request_append
     responseindict = json.loads(API.sendGETRequest(url, token, orgId, siteId))
     response = int(responseindict["data"]["pageInfo"]["totalRecords"])
@@ -86,15 +92,70 @@ def get_all_matchingDevices(NCE_IP,token, orgId, siteId,typeofDevice):
 
 
 
-def get_all_discovered_and_unscheduled_compute_devices(NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time):
-    request_append = '/all?scheduleDate=' + schedule_start_date + '&scheduleTime=' + schedule_start_time + '&scheduleEndDate=' + schedule_end_date + '&scheduleEndTime=' + schedule_end_time + \
-                     '&devSubType=FABRIC_INTERCONNECT&devSubType=SWITCH&devSubType=ROUTER&devSubType=LB&devSubType=BARE_METAL&devSubType=VM&devSubType=HYPERVISOR&devSubType=COMPUTE&triggerType=SERVER_MONITORING&reachableList=TELNET&reachableList=SSH&reachableList=WINEXE&reachableList=SNMP&reachableList=WMI_SHELL&reachableList=JUMP_SERVER&reachableList=WMIC&reachableList=PYSPHERE'
+def get_all_discovered_and_unscheduled_compute_devices(NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time,typeOfRequest):
+    if typeOfRequest == 'SERVER_MONITORING':
+        request_append = '/all?scheduleDate=' + schedule_start_date + '&scheduleTime=' + schedule_start_time + '&scheduleEndDate=' + schedule_end_date + '&scheduleEndTime=' + schedule_end_time + \
+                     '&devSubType=FABRIC_INTERCONNECT&devSubType=SWITCH&devSubType=ROUTER&devSubType=LB&devSubType=BARE_METAL&devSubType=VM&devSubType=HYPERVISOR&devSubType=COMPUTE&triggerType='+typeOfRequest+'&reachableList=TELNET&reachableList=SSH&reachableList=WINEXE&reachableList=SNMP&reachableList=WMI_SHELL&reachableList=JUMP_SERVER&reachableList=WMIC&reachableList=PYSPHERE'
+
+    if typeOfRequest == 'PCAP_COLLECTION':
+        request_append = '/all?scheduleDate=' + schedule_start_date + '&scheduleTime=' + schedule_start_time + '&scheduleEndDate=' + schedule_end_date + '&scheduleEndTime=' + schedule_end_time + \
+                     '&triggerType='+typeOfRequest
 
     url = "https://"+NCE_IP+getDeviceURL + request_append
     responseindict = json.loads(API.sendGETRequest(url, token, orgId, siteId))
     response = responseindict["data"]
     response = json.dumps(response)
     return response
+
+def scheduleServerFlow(response,interval,NumberOfDevices,NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time):
+    import json
+    devices = json.loads(response);
+    requiredList = [];
+    count=0;
+    for device in devices:
+        temp = {};
+        temp["deviceId"] = device["deviceId"];
+        temp["ip"] = device["discoveredIpAddr"];
+        temp["fqdn"] = device["fqdn"];
+        requiredList.append(temp);
+        count = count+1;
+        if count == int(NumberOfDevices):
+            break;
+    #print len(requiredList),requiredList
+
+    requestPayload = {
+        "ipPool": {
+            "fqdnAddress": [],
+            "maskRange": [],
+            "ipRange": []
+        },
+        "dsSelectedSiteId": siteId,
+        "dsSelectedOrganization": orgId,
+        "scheduleInfo": {
+            "recurrence": "MINUTE",
+            "recurrenceMin": interval,
+            "recurrenceHour": "",
+            "scheduleDate": schedule_start_date,
+            "scheduleTime": schedule_start_time,
+            "scheduleEndDate": schedule_end_date,
+            "scheduleEndTime": schedule_end_time
+        },
+        "triggerType": "PCAP_COLLECTION",
+        "createdBy": "Admin",
+        "discoveredDeviceType": "true",
+        "requestName": str(NumberOfDevices) + " devices and interval "+str(interval)
+    }
+    requestPayload["ipPool"]["fqdnAddress"] = requiredList;
+    requestPayload= json.dumps(requestPayload)
+    serverperformancescheduleURL_v2='/api/v2/dataCollector/schedule/'
+    schedule_server_performance_URL = "https://"+NCE_IP + serverperformancescheduleURL_v2
+    responseindict = json.loads(API.sendPOSTRequest(schedule_server_performance_URL, requestPayload, token, orgId,siteId))
+    response = responseindict["data"]
+    import re
+    m = re.search(r"\[([A-Za-z0-9_-]+)\]", response)
+    return m.group(1)
+
+
 
 def schedulePerformance(response,interval,NumberOfDevices,NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time):
     import json

@@ -87,14 +87,26 @@ for input in inputs:
         ESnewDate = schedule_start_date + " " + schedule_start_time1+":00"
         ESendDate = schedule_end_date + " " + schedule_end_time1+":59"
 
-        #get all devices
-        response= RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP,Token,Org,Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time)
+
+        #get all devices for server performance
+        response= RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP,Token,Org,Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time,"SERVER_MONITORING")
 
         #schedule devices for performance
         requestId=RequiredAPI.schedulePerformance(response,TimeInterval,NumberOfDevices,NCE_IP,Token,Org, Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time)
-        logging.info("Server Performance Schedule with %s requestId %s Devices and %s min interval -----",requestId,NumberOfDevices,TimeInterval)
-        logging.info("Data collection inprogress........Start Date: "+ESnewDate+" End Date: "+ESendDate)
 
+        logging.info("Server Performance Schedule with %s requestId %s Devices and %s min interval -----",requestId,NumberOfDevices,TimeInterval)
+
+        #get all devices for server flow
+        response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time,"PCAP_COLLECTION")
+
+        #schedule devices for flow
+        requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, TimeInterval, NumberOfDevices, NCE_IP, Token, Org, Site,
+                                                   schedule_start_date, schedule_start_time, schedule_end_date,
+                                                   schedule_end_time)
+
+        logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----", requestId_serverFlow,NumberOfDevices, TimeInterval)
+
+        logging.info("Data collection inprogress........Start Date: " + ESnewDate + " End Date: " + ESendDate)
         time.sleep((Duration*60)+600)
 
         # # import subprocess
@@ -125,8 +137,23 @@ for input in inputs:
                 logging.info("ServerPerformance Exception is :"+str(e))
         else:
             logging.info(key+" key is not present in DC/NCE output Excel")
+
         time.sleep(60)
-        res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId)
-        logging.info("Server Performance Scheduled request %s deleted with %s Devices and %s min interval",requestId,NumberOfDevices, TimeInterval)
+        # Delete Performance Request
+        try:
+            res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId)
+        except Exception as e:
+            print str(e)
+        logging.info("Server Performance Scheduled request %s deleted with %s Devices and %s min interval",
+                     requestId, NumberOfDevices, TimeInterval)
+
+        # Delete ServerFlow Request
+        try:
+            res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId_serverFlow)
+        except Exception as e:
+            print str(e)
+        logging.info("Server Flow Scheduled request %s deleted with %s Devices and %s min interval",
+                     requestId_serverFlow, NumberOfDevices, TimeInterval)
+
     except Exception as e:
         logging.info("scheduleServerPerformance Exception is :" + str(e))

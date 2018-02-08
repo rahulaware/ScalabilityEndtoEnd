@@ -51,7 +51,7 @@ for input in inputs:
         while True:
             time.sleep(120)
             numberofSecond=numberofSecond+120
-            value,requestId = RequiredAPI.get_all_scheduledDiscoveryRequest(NCE_IP,Token,Org,Site)
+            value,requestId = RequiredAPI.get_all_scheduledDiscoveryRequest(NCE_IP,Token,Org,Site,"NETWORK_DISCOVERY")
             if value == 0:
                 requestPayload=None
                 print "Request successful with for "+typeOfDevice+" "+str(input["mask"])
