@@ -30,7 +30,7 @@ inputs=[[200,2],[200,3],[200,5],[200,7],[200,10],[200,15],[500,2],[500,3],[500,5
 
 
 outputLogFile='MissingCycleIND.log'
-outputFile="OutputExcel.xlsx"
+outputFile="Output.xlsx"
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 logging.getLogger("paramiko").setLevel(logging.ERROR)
 
@@ -103,21 +103,21 @@ for input in inputs:
                      NumberOfDevices, TimeInterval)
 
         # get all devices for server flow
-        response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,
-                                                                                             schedule_start_date,
-                                                                                             schedule_start_time,
-                                                                                             schedule_end_date,
-                                                                                             schedule_end_time,
-                                                                                             "PCAP_COLLECTION")
-
-        # schedule devices for flow
-        requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, TimeInterval, NumberOfDevices,                             NCE_IP, Token, Org, Site,
-                                                              schedule_start_date, schedule_start_time,
-                                                              schedule_end_date,
-                                                              schedule_end_time)
-
-        logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----",
-                     requestId_serverFlow, NumberOfDevices, TimeInterval)
+        # response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,
+        #                                                                                      schedule_start_date,
+        #                                                                                      schedule_start_time,
+        #                                                                                      schedule_end_date,
+        #                                                                                      schedule_end_time,
+        #                                                                                      "PCAP_COLLECTION")
+        #
+        # # schedule devices for flow
+        # requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, TimeInterval, NumberOfDevices,                             NCE_IP, Token, Org, Site,
+        #                                                       schedule_start_date, schedule_start_time,
+        #                                                       schedule_end_date,
+        #                                                       schedule_end_time)
+        #
+        # logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----",
+        #              requestId_serverFlow, NumberOfDevices, TimeInterval)
 
         logging.info("Data collection inprogress........Start Date: " + ESnewDate + " End Date: " + ESendDate)
         time.sleep((Duration * 60) + 600)
@@ -160,12 +160,12 @@ for input in inputs:
                      requestId, NumberOfDevices, TimeInterval)
 
         # Delete ServerFlow Request
-        try:
-            res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId_serverFlow)
-        except Exception as e:
-            print str(e)
-        logging.info("Server Flow Scheduled request %s deleted with %s Devices and %s min interval",
-                     requestId_serverFlow, NumberOfDevices, TimeInterval)
+        # try:
+        #     res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId_serverFlow)
+        # except Exception as e:
+        #     print str(e)
+        # logging.info("Server Flow Scheduled request %s deleted with %s Devices and %s min interval",
+        #              requestId_serverFlow, NumberOfDevices, TimeInterval)
 
     except Exception as e:
         logging.info("scheduleServerPerformance Exception is :" + str(e))
