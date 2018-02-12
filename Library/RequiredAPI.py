@@ -56,11 +56,11 @@ def getOrgAndSite(NCE_IP,token,site):
 
 get_all_scheduledRequest="/api/v2/scheduler/status/"
 def get_all_scheduledDiscoveryRequest(NCE_IP,token, orgId, siteId,typeOfRequest):
-    if "SERVER_MONITORING":
+    if typeOfRequest == "SERVER_MONITORING":
         request_append='all?page=1&size=25&sort=status,DESC&triggerType ='+typeOfRequest
-    if "NETWORK_DISCOVERY" :
+    if typeOfRequest == "NETWORK_DISCOVERY":
         request_append = "all?page=1&size=25&sort=startDate,DESC&status=IN_PROGRESS&triggerType="+typeOfRequest
-    if "PCAP_COLLECTION":
+    if typeOfRequest == "PCAP_COLLECTION":
         request_append = "all?page=1&size=25&sort=status,DESC&triggerType=" + typeOfRequest
 
     url="https://"+NCE_IP+get_all_scheduledRequest+request_append
