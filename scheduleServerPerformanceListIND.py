@@ -23,7 +23,7 @@ timefmt1= "%H:%M"
 ft = Font(color=colors.RED)
 Duration=30
 
-inputs=[[200,2],[200,3],[200,5],[200,7],[200,10],[200,15],[500,2],[500,3],[500,5],[500,7],[500,10],[500,15]]
+#inputs=[[200,2],[200,3],[200,5],[200,7],[200,10],[200,15],[500,2],[500,3],[500,5],[500,7],[500,10],[500,15]]
 #inputs=[[750,2],[750,3],[750,5],[750,7],[750,10],[750,15],[1000,2],[1000,3],[1000,5],[1000,7],[1000,10],[1000,15],[1500,2],[1500,3],[1500,5],[1500,7],[1500,10],[1500,15]]
 #inputs=[[100,2],[100,3],[100,5],[100,7],[100,10],[100,15],[300,2],[300,3],[300,5],[300,7],[300,10],[300,15],[400,2],[400,3],[400,5],[400,7],[400,10],[400,15],[1200,2],[1200,3],[1200,5],[1200,7],[1200,10],[1200,15]]
 #inputs=[[100,1],[200,1],[300,1],[400,1],[500,1],[750,1],[1000,1],[1200,1],[1500,1]]
@@ -103,21 +103,21 @@ for input in inputs:
                      NumberOfDevices, TimeInterval)
 
         # get all devices for server flow
-        # response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,
-        #                                                                                      schedule_start_date,
-        #                                                                                      schedule_start_time,
-        #                                                                                      schedule_end_date,
-        #                                                                                      schedule_end_time,
-        #                                                                                      "PCAP_COLLECTION")
-        #
-        # # schedule devices for flow
-        # requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, TimeInterval, NumberOfDevices,                             NCE_IP, Token, Org, Site,
-        #                                                       schedule_start_date, schedule_start_time,
-        #                                                       schedule_end_date,
-        #                                                       schedule_end_time)
-        #
-        # logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----",
-        #              requestId_serverFlow, NumberOfDevices, TimeInterval)
+        response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,
+                                                                                             schedule_start_date,
+                                                                                             schedule_start_time,
+                                                                                             schedule_end_date,
+                                                                                             schedule_end_time,
+                                                                                             "PCAP_COLLECTION")
+
+        # schedule devices for flow
+        requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, TimeInterval, NumberOfDevices,                             NCE_IP, Token, Org, Site,
+                                                              schedule_start_date, schedule_start_time,
+                                                              schedule_end_date,
+                                                              schedule_end_time)
+
+        logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----",
+                     requestId_serverFlow, NumberOfDevices, TimeInterval)
 
         logging.info("Data collection inprogress........Start Date: " + ESnewDate + " End Date: " + ESendDate)
         time.sleep((Duration * 60) + 600)
@@ -160,12 +160,12 @@ for input in inputs:
                      requestId, NumberOfDevices, TimeInterval)
 
         # Delete ServerFlow Request
-        # try:
-        #     res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId_serverFlow)
-        # except Exception as e:
-        #     print str(e)
-        # logging.info("Server Flow Scheduled request %s deleted with %s Devices and %s min interval",
-        #              requestId_serverFlow, NumberOfDevices, TimeInterval)
+        try:
+            res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId_serverFlow)
+        except Exception as e:
+            print str(e)
+        logging.info("Server Flow Scheduled request %s deleted with %s Devices and %s min interval",
+                     requestId_serverFlow, NumberOfDevices, TimeInterval)
 
     except Exception as e:
         logging.info("scheduleServerPerformance Exception is :" + str(e))
