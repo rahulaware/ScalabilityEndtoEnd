@@ -1,6 +1,6 @@
 from Library import RequiredAPI;
 from datetime import datetime,timedelta
-import CycleCollectionCountForDevicesES,ResponseCycleCountForDevicesDC
+import CycleCollectionCountForDevicesES,ResponseCycleCountForDevicesDC,sendTrap
 import logging
 import time
 from openpyxl import load_workbook
@@ -93,8 +93,11 @@ for input in inputs:
         #get all devices for server performance
         response= RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP,Token,Org,Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time,"SERVER_MONITORING")
 
+        listOfDevices=[];
+        listOfDevices= RequiredAPI.selectDevices(response,NumberOfDevices)
+
         #schedule devices for performance
-        requestId=RequiredAPI.schedulePerformance(response,TimeInterval,NumberOfDevices,NCE_IP,Token,Org, Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time)
+        requestId=RequiredAPI.schedulePerformance(listOfDevices,TimeInterval,NumberOfDevices,NCE_IP,Token,Org, Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time)
 
         logging.info("Server Performance Schedule with %s requestId %s Devices and %s min interval -----",requestId,NumberOfDevices,TimeInterval)
 
@@ -107,9 +110,14 @@ for input in inputs:
                                                    schedule_end_time)
 
         logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----", requestId_serverFlow,NumberOfDevices, server_Flow_Interval)
-
         logging.info("Data collection inprogress........Start Date: " + ESnewDate + " End Date: " + ESendDate)
-        time.sleep((Duration*60)+600)
+
+        time.sleep(((Duration/2)*60))
+
+        #creating Faults
+        sendTrap.generateTrapOnDevices(listOfDevices,DC_IP)
+
+        time.sleep(((Duration/2) * 60) + 600)
 
         # # import subprocess
         # # #python CycleCollectionCountForDevicesES.py requestId,numberofDevices,interval,ESnewDate,EndDate

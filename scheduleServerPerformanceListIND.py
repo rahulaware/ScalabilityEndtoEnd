@@ -1,6 +1,6 @@
 from Library import RequiredAPI;
 from datetime import datetime,timedelta
-import CycleCollectionCountForDevicesES,ResponseCycleCountForDevicesDC
+import CycleCollectionCountForDevicesES,ResponseCycleCountForDevicesDC,sendTrap
 import logging
 import time
 from openpyxl import load_workbook
@@ -95,8 +95,11 @@ for input in inputs:
                                                                                   schedule_end_date, schedule_end_time,
                                                                                   "SERVER_MONITORING")
 
+        listOfDevices = [];
+        listOfDevices = RequiredAPI.selectDevices(response, NumberOfDevices)
+
         # schedule devices for performance
-        requestId = RequiredAPI.schedulePerformance(response, TimeInterval, NumberOfDevices, NCE_IP, Token, Org, Site,
+        requestId = RequiredAPI.schedulePerformance(listOfDevices, TimeInterval, NumberOfDevices, NCE_IP, Token, Org, Site,
                                                     schedule_start_date, schedule_start_time, schedule_end_date,
                                                     schedule_end_time)
 
@@ -121,7 +124,14 @@ for input in inputs:
                      requestId_serverFlow, NumberOfDevices, server_Flow_Interval)
 
         logging.info("Data collection inprogress........Start Date: " + ESnewDate + " End Date: " + ESendDate)
-        time.sleep((Duration * 60) + 600)
+
+        time.sleep(((Duration / 2) * 60))
+
+        # creating Faults
+        sendTrap.generateTrapOnDevices(listOfDevices, DC_IP)
+
+        time.sleep(((Duration / 2) * 60) + 600)
+
         # # import subprocess
         # # #python CycleCollectionCountForDevicesES.py requestId,numberofDevices,interval,ESnewDate,EndDate
         # # output = subprocess.call(["python", "CycleCollectionCountForDevicesES.py", str(requestId), str(NumberOfDevices),str(TimeInterval),ESnewDate,ESendDate])
