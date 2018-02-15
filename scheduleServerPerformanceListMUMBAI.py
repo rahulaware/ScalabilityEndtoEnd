@@ -7,8 +7,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font,colors
 
 NCE_IP="172.16.2.112"
-siteName="IND"
-DC_IP = "172.16.2.116"
+siteName="MUMBAI"
+DC_IP = "172.16.3.59"
 port = 22
 username = 'root'
 password = 'FixStream'
@@ -30,7 +30,7 @@ server_Flow_Interval=20
 #inputs=[[100,1],[200,1],[300,1],[400,1],[500,1],[750,1],[1000,1],[1200,1],[1500,1]]
 inputs=[[200,2],[200,3],[200,5],[200,7],[200,10],[200,15],[500,2],[500,3],[500,5],[500,7],[500,10],[500,15],[100,2],[100,3],[100,5],[100,7],[100,10],[100,15],[300,2],[300,3],[300,5],[300,7],[300,10],[300,15],[400,2],[400,3],[400,5],[400,7],[400,10],[400,15]]
 
-outputLogFile='MissingCycleIND.log'
+outputLogFile='MissingCycleMUMBAI.log'
 outputFile="Output.xlsx"
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 logging.getLogger("paramiko").setLevel(logging.ERROR)

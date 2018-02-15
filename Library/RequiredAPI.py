@@ -8,16 +8,7 @@ client_id="fixstreamapp"
 client_secret="fixstream"
 
 org_name = 'FIXSTREAM'
-site_name = 'US'
-site_name1 = 'IND'
-
 org_id_jsonpath = "$[?(@.orgName=='" + org_name + "')].orgId"
-
-site_id_jsonpath = "$[?(@.orgName=='" + org_name + \
-    "')].siteList[?(@.siteName=='" + site_name + "')].siteId"
-
-site_id1_jsonpath = "$[?(@.orgName=='" + org_name + \
-    "')].siteList[?(@.siteName=='" + site_name1 + "')].siteId"
 
 
 auth_Token="/oauth/token"
@@ -46,12 +37,10 @@ def getOrgAndSite(NCE_IP,token,site):
     site_response = json.loads(response)
     orgId = jsonpath(
         site_response, org_id_jsonpath)
-    if site == 'US':
-        siteId = jsonpath(
-            site_response, site_id_jsonpath)
-    else:
-        siteId = jsonpath(
-            site_response, site_id1_jsonpath)
+    site_id_jsonpath = "$[?(@.orgName=='" + org_name + \
+                       "')].siteList[?(@.siteName=='" + site + "')].siteId"
+    siteId = jsonpath(
+         site_response, site_id_jsonpath)
     return orgId[0], siteId[0]
 
 get_all_scheduledRequest="/api/v2/scheduler/status/"

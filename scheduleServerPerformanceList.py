@@ -14,7 +14,7 @@ username = 'root'
 password = 'FixStream'
 Database_IP="172.16.2.49"
 databaseName="Scalability"
-tableName='meridian_data_US'
+tableName=siteName
 DBusername="root"
 DBpassword="FixStream"
 datefmt = "%Y-%m-%d"
@@ -135,7 +135,7 @@ for input in inputs:
         if key in DCoutputExcel and key in NCEoutputExcel:
             try:
                 Excel = load_workbook(filename=outputFile)
-                SiteSheet = Excel['USSite']
+                SiteSheet = Excel[siteName]
                 SiteSheet[DCoutputExcel[key]] = round(DCOutput,2)
                 SiteSheet[NCEoutputExcel[key]] = round(NCEFailure,2)
                 if DCOutput >= 1:
@@ -164,6 +164,6 @@ for input in inputs:
             print str(e)
         logging.info("Server Flow Scheduled request %s deleted with %s Devices and %s min interval",
                      requestId_serverFlow, NumberOfDevices, server_Flow_Interval)
-
+        time.sleep(300)
     except Exception as e:
         logging.info("scheduleServerPerformance Exception is :" + str(e))

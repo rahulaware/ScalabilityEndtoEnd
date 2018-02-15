@@ -1,7 +1,5 @@
-#sh createDevicesOnDC.sh
+sh createDummyDevicesAndFlowsOnDC.sh 172.16.2.116 root FixStream
 
-#sh createFlowBetweenDevicesOnDC.sh
-
-#python scheduleDiscoveryIND.py >> discoveryLog.txt
+python scheduleDiscovery.py 172.16.2.112 IND >> discoveryLog.txt
 
 python scheduleServerPerformanceListIND.py

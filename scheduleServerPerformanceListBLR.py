@@ -7,8 +7,8 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font,colors
 
 NCE_IP="172.16.2.112"
-siteName="IND"
-DC_IP = "172.16.2.116"
+siteName="BLR"
+DC_IP = "172.16.3.60"
 port = 22
 username = 'root'
 password = 'FixStream'
@@ -30,7 +30,7 @@ server_Flow_Interval=20
 #inputs=[[100,1],[200,1],[300,1],[400,1],[500,1],[750,1],[1000,1],[1200,1],[1500,1]]
 inputs=[[200,2],[200,3],[200,5],[200,7],[200,10],[200,15],[500,2],[500,3],[500,5],[500,7],[500,10],[500,15],[100,2],[100,3],[100,5],[100,7],[100,10],[100,15],[300,2],[300,3],[300,5],[300,7],[300,10],[300,15],[400,2],[400,3],[400,5],[400,7],[400,10],[400,15]]
 
-outputLogFile='MissingCycleIND.log'
+outputLogFile='MissingCycleBLR.log'
 outputFile="Output.xlsx"
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 logging.getLogger("paramiko").setLevel(logging.ERROR)
@@ -88,49 +88,35 @@ for input in inputs:
         ESnewDate = schedule_start_date + " " + schedule_start_time1+":00"
         ESendDate = schedule_end_date + " " + schedule_end_time1+":59"
 
-        # get all devices for server performance
-        response = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,
-                                                                                  schedule_start_date,
-                                                                                  schedule_start_time,
-                                                                                  schedule_end_date, schedule_end_time,
-                                                                                  "SERVER_MONITORING")
 
-        listOfDevices = [];
-        listOfDevices = RequiredAPI.selectDevices(response, NumberOfDevices)
+        #get all devices for server performance
+        response= RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP,Token,Org,Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time,"SERVER_MONITORING")
 
-        # schedule devices for performance
-        requestId = RequiredAPI.schedulePerformance(listOfDevices, TimeInterval, NumberOfDevices, NCE_IP, Token, Org, Site,
-                                                    schedule_start_date, schedule_start_time, schedule_end_date,
-                                                    schedule_end_time)
+        listOfDevices=[];
+        listOfDevices= RequiredAPI.selectDevices(response,NumberOfDevices)
 
-        logging.info("Server Performance Schedule with %s requestId %s Devices and %s min interval -----", requestId,
-                     NumberOfDevices, TimeInterval)
+        #schedule devices for performance
+        requestId=RequiredAPI.schedulePerformance(listOfDevices,TimeInterval,NumberOfDevices,NCE_IP,Token,Org, Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time)
 
-        # get all devices for server flow
-        response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,
-                                                                                             schedule_start_date,
-                                                                                             schedule_start_time,
-                                                                                             schedule_end_date,
-                                                                                             schedule_end_time,
-                                                                                             "PCAP_COLLECTION")
+        logging.info("Server Performance Schedule with %s requestId %s Devices and %s min interval -----",requestId,NumberOfDevices,TimeInterval)
 
-        # schedule devices for flow
-        requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, server_Flow_Interval, NumberOfDevices,                             NCE_IP, Token, Org, Site,
-                                                              schedule_start_date, schedule_start_time,
-                                                              schedule_end_date,
-                                                              schedule_end_time)
+        #get all devices for server flow
+        response_serverFlow = RequiredAPI.get_all_discovered_and_unscheduled_compute_devices(NCE_IP, Token, Org, Site,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time,"PCAP_COLLECTION")
 
-        logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----",
-                     requestId_serverFlow, NumberOfDevices, server_Flow_Interval)
+        #schedule devices for flow
+        requestId_serverFlow = RequiredAPI.scheduleServerFlow(response_serverFlow, server_Flow_Interval, NumberOfDevices, NCE_IP, Token, Org, Site,
+                                                   schedule_start_date, schedule_start_time, schedule_end_date,
+                                                   schedule_end_time)
 
+        logging.info("Server flow Schedule with %s requestId %s Devices and %s min interval -----", requestId_serverFlow,NumberOfDevices, server_Flow_Interval)
         logging.info("Data collection inprogress........Start Date: " + ESnewDate + " End Date: " + ESendDate)
 
-        time.sleep(((Duration / 2) * 60))
+        time.sleep(((Duration/2)*60))
 
-        # creating Faults
-        sendTrap.generateTrapOnDevices(listOfDevices, DC_IP)
+        #creating Faults
+        sendTrap.generateTrapOnDevices(listOfDevices,DC_IP)
 
-        time.sleep(((Duration / 2) * 60) + 600)
+        time.sleep(((Duration/2) * 60) + 600)
 
         # # import subprocess
         # # #python CycleCollectionCountForDevicesES.py requestId,numberofDevices,interval,ESnewDate,EndDate
@@ -157,7 +143,7 @@ for input in inputs:
                     SiteSheet[NCEoutputExcel[key]].font=ft
                 Excel.save(outputFile)
             except Exception as e:
-                logging.info("scheduleServerPerformance Exception is :" + str(e))
+                logging.info("ServerPerformance Exception is :"+str(e))
         else:
             logging.info(key+" key is not present in DC/NCE output Excel")
 
@@ -170,7 +156,7 @@ for input in inputs:
         logging.info("Server Performance Scheduled request %s deleted with %s Devices and %s min interval",
                      requestId, NumberOfDevices, TimeInterval)
 
-        # Delete ServerFlow Request
+        #Delete ServerFlow Request
         try:
             res = RequiredAPI.deleteRequest(NCE_IP, Token, Org, Site, requestId_serverFlow)
         except Exception as e:
