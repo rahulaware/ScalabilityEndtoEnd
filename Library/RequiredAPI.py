@@ -43,6 +43,16 @@ def getOrgAndSite(NCE_IP,token,site):
          site_response, site_id_jsonpath)
     return orgId[0], siteId[0]
 
+def acivateEventCenterConfigurationStatus (NCE_IP,token,orgId, siteId, createTime, updateTime, snmpCommunity, snmpVersion) :
+    body_param = '{"header":{"orgId":"' + orgId + '","siteId":"' + siteId + '","dcId":"DATA_COLLECTOR_ID","dcTriggerType":"SNMP_TRAP_CONFIG_CHANGE","msgType":"SNMP/FCA_CONFIG/SNMP_TRAP","dcCreateTime":' + createTime + ',"dcUpdateTime":' + updateTime + '},"properties":{"snmpCommunity":"' + snmpCommunity + '","snmpVersion":"' + snmpVersion + '","snmpV3Username":null,"snmpV3AuthPassphrase":null,"snmpV3AuthProtocol":null,"snmpV3PrivacyPassphrase":null,"snmpV3PrivacyProtocol":null,"siteFaultCollectionStatus":"true","siteV3FaultCollectionStatus":null}}'
+    acivateEventCenterConfigurationStatus_url = "https://"+NCE_IP+'/api/v2/ec/configure'
+    responseindict = json.loads(API.sendPOSTRequest(acivateEventCenterConfigurationStatus_url, body_param, token, orgId, siteId))
+    response = responseindict["data"]
+    response= json.dumps(response)
+    return response
+
+
+
 get_all_scheduledRequest="/api/v2/scheduler/status/"
 def get_all_scheduledDiscoveryRequest(NCE_IP,token, orgId, siteId,typeOfRequest):
     if typeOfRequest == "SERVER_MONITORING":
