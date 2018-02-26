@@ -98,13 +98,13 @@ def generateReport(requestId1,numberOfDevices1,NumberofCyclePerDevice,startDate1
         Token= RequiredAPI.getToken(NCE_IP)
         Org,Site=RequiredAPI.getOrgAndSite(NCE_IP,Token,siteName)
         checkTableExistanceAndCreate()
-        deviceList= RequiredAPI.getscheduledDevicesForPerformance(NCE_IP,Token,Org, Site, requestId)
-
+        deviceIDList= RequiredAPI.getscheduledDevicesIDForPerformance(NCE_IP,Token,Org, Site, requestId)
+        #deviceIDList = RequiredAPI.getscheduledDevicesForPerformance(NCE_IP, Token, Org, Site, requestId)
         DatatoDump=[]
         count=0;
-        deviceList1=[x for x in deviceList if x is not None]
+        deviceIDList=[x for x in deviceIDList if x is not None]
 
-        for device in deviceList1:
+        for device in deviceIDList:
             outputListCpu= RequiredAPI.getPerformancedatafordevice(NCE_IP, Token, Org, Site, device,"cpuMetrics","default","default")
             outputListMem = RequiredAPI.getPerformancedatafordevice(NCE_IP, Token, Org, Site, device, "memMetrics", "RAM",
                                                                   "default")
@@ -125,3 +125,4 @@ def generateReport(requestId1,numberOfDevices1,NumberofCyclePerDevice,startDate1
         return float(output)
     except Exception as e:
         logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
+
