@@ -223,33 +223,33 @@ def getscheduledDeviceswithdeviceId(NCE_IP,token,orgId, siteId):
     return discovery_response
 
 
-# getscheduledDevicesURL='/api/v2/scheduler/octet/'
-# def getscheduledDevicesForPerformance(NCE_IP,token,orgId, siteId, requestID):
-#     getscheduledDevicesURL1 = "https://"+NCE_IP + getscheduledDevicesURL + requestID
-#     discovery_response = json.loads(API.sendGETRequest(getscheduledDevicesURL1,token, orgId, siteId))
-#     discovery_response=  discovery_response["data"]
-#     from jsonpath import jsonpath
-#     deviceList= jsonpath(discovery_response, "$..fqdn")
-#     deviceNameList=[];
-#     for device in deviceList:
-#         deviceNameList.append(str(device).split(".")[0])
-#     discovery_response = getscheduledDeviceswithdeviceId(NCE_IP, token, orgId, siteId)
-#     deviceIdList=[]
-#     for key in discovery_response:
-#         for device in discovery_response[key]:
-#             if device["hostName"] in deviceNameList:
-#                 deviceIdList.append(device["deviceId"])
-#     return deviceIdList
+getscheduledDevicesURL='/api/v2/scheduler/octet/'
+def getscheduledDevicesForPerformance(NCE_IP,token,orgId, siteId, requestID):
+    getscheduledDevicesURL1 = "https://"+NCE_IP + getscheduledDevicesURL + requestID
+    discovery_response = json.loads(API.sendGETRequest(getscheduledDevicesURL1,token, orgId, siteId))
+    discovery_response=  discovery_response["data"]
+    from jsonpath import jsonpath
+    deviceList= jsonpath(discovery_response, "$..fqdn")
+    deviceNameList=[];
+    for device in deviceList:
+        deviceNameList.append(str(device).split(".")[0])
+    discovery_response = getscheduledDeviceswithdeviceId(NCE_IP, token, orgId, siteId)
+    deviceIdList=[]
+    for key in discovery_response:
+        for device in discovery_response[key]:
+            if device["hostName"] in deviceNameList:
+                deviceIdList.append(device["deviceId"])
+    return deviceIdList
 #print getscheduledDevicesForPerformance("172.16.2.112","Bearer 06ab96f8-bcc1-4725-b076-19b66ac0c689","5829fbce-2580-46f0-8194-0950fee12b77:FIXSTREAM","9e7c11c8-28fd-44a9-9b54-37efe8668d2c:IND","52bdcb17-6d23-4219-b3e4-f9a327f6d90b")
 
-getscheduledDevicesIdURL='/api/v2/scheduler/devices/'
-def getscheduledDevicesIDForPerformance(NCE_IP,token,orgId, siteId, requestID):
-     getscheduledDevicesIdURL1 = "https://"+NCE_IP + getscheduledDevicesIdURL + requestID
-     discovery_response = json.loads(API.sendGETRequest(getscheduledDevicesIdURL1,token, orgId, siteId))
-     discovery_response=  discovery_response["data"]
-     from jsonpath import jsonpath
-     deviceIdList= jsonpath(discovery_response, "$..deviceId")
-     return deviceIdList
+# getscheduledDevicesIdURL='/api/v2/scheduler/devices/'
+# def getscheduledDevicesIDForPerformance(NCE_IP,token,orgId, siteId, requestID):
+#      getscheduledDevicesIdURL1 = "https://"+NCE_IP + getscheduledDevicesIdURL + requestID
+#      discovery_response = json.loads(API.sendGETRequest(getscheduledDevicesIdURL1,token, orgId, siteId))
+#      discovery_response=  discovery_response["data"]
+#      from jsonpath import jsonpath
+#      deviceIdList= jsonpath(discovery_response, "$..deviceId")
+#      return deviceIdList
 #print getscheduledDevicesIDForPerformance("172.16.2.112","Bearer c8a4f457-c19b-427d-b5f1-c06a45a32add","5829fbce-2580-46f0-8194-0950fee12b77:FIXSTREAM","9ca0574f-e9d4-4270-b771-d30cd6fd2a91:US","dfba8633-d1fc-45cf-8916-40fb768720e")
 
 getPerformancedatafordeviceURL='/api/v2/metrics/server/timeSeries'

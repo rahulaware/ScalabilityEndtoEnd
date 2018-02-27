@@ -98,7 +98,7 @@ def generateReport(requestId1,numberOfDevices1,NumberofCyclePerDevice,startDate1
         Token= RequiredAPI.getToken(NCE_IP)
         Org,Site=RequiredAPI.getOrgAndSite(NCE_IP,Token,siteName)
         checkTableExistanceAndCreate()
-        deviceIDList= RequiredAPI.getscheduledDevicesIDForPerformance(NCE_IP,Token,Org, Site, requestId)
+        deviceIDList= RequiredAPI.getscheduledDevicesForPerformance(NCE_IP,Token,Org, Site, requestId)
         #deviceIDList = RequiredAPI.getscheduledDevicesForPerformance(NCE_IP, Token, Org, Site, requestId)
         DatatoDump=[]
         count=0;
@@ -126,3 +126,4 @@ def generateReport(requestId1,numberOfDevices1,NumberofCyclePerDevice,startDate1
     except Exception as e:
         logging.info("CycleCollectionCountForDevicesES Exception is :" + str(e))
 
+#generateReport("a5c29a5f-5b4d-445c-9fb1-eaa316b06223",200,7,'2018-02-27 09:54:00','2018-02-27 10:24:59',"172.16.2.112","IND","172.16.2.49","Scalability","US","root","FixStream")
