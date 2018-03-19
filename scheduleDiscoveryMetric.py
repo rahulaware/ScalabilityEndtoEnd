@@ -77,13 +77,13 @@ def devicePresenceInInventory(Token,Org,Site,listOfIPs,NumberOfTime):
         NumberofPresentDevices,MissingList = RequiredAPI.check_Device_Existance_In_Inventory(InventoryData, listOfIPs)
         logging.info("==Inventory Status %s==",str(NumberOfTime))
         logging.info("Number of Devices Present Inventory: %s",str(NumberofPresentDevices))
-        PassPercent = (NumberofPresentDevices * 100) / len(listOfIPs)
+        PassPercent = round((NumberofPresentDevices * 100) / float(len(listOfIPs)),2)
         logging.info("Pass Percent: %s", str(PassPercent))
         logging.info("Fail Percent: %s", str(100-PassPercent))
         ScheduleStatus["NoOfDeviceInventory" + str(NumberOfTime)] = str(NumberofPresentDevices)
         ScheduleStatus["Passed%InventoryStatus"+ str(NumberOfTime)]= str(PassPercent)
         if MissingList:
-            logging.info("Pass Percent: %s", str(MissingList))
+            logging.info("MissingList Devices: %s", str(MissingList))
         return PassPercent
     except Exception as e:
         print e
@@ -185,10 +185,12 @@ for deviceCount, discoveryInput in discoveryList.items():
                     break;
                 time.sleep(120)
                 numberofSecond = numberofSecond + 120
-                # if value == 1 and (numberofSecond/60) > 20 :
-                #     res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
-                #     print "Request is deleted for "+typeOfDevice+" "+str(input["mask"])
-                #     break;
+                if value == 1 and (numberofSecond/60) > 60 :
+                    try:
+                        res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
+                    except Exception as e:
+                        print "Exception is :" + str(e)
+                    break;
             except Exception as e:
                 logging.info("Excpetion :%s",str(e))
 
@@ -202,7 +204,7 @@ for deviceCount, discoveryInput in discoveryList.items():
         outputSaveInLogFile("DC", DCTopOutput)
 
         NumberOfTime=0
-        timeWait=120
+        timeWait=600
         logging.info("-----Inventory Status----")
         while True:
             Time= CompletionTime+ (timeWait * NumberOfTime)/60
