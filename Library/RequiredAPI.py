@@ -272,3 +272,48 @@ def getPerformancedatafordevice(NCE_IP,token,orgId, siteId, deviceID,metricName,
                 outputList.append(t1)
                 t1 = None
         return outputList
+
+deviceURL_v2 = '/api/v2/devices'
+def getInventoryTable(NCE_IP,Token,orgId, siteId):
+    page=1
+    InventoryData=[]
+    while True:
+        #query = '/tableView?page=' + str(page) + '&size=500&sort=lastUpdateTime,DESC'
+        query='/tableView?page='+str(page)+'&size=1500&sort=hostName,DESC'
+        inventory_url = "https://"+NCE_IP+deviceURL_v2 + query
+        try:
+            responseindict = API.sendPOSTRequest(inventory_url ,'', Token ,orgId, siteId)
+            responseindict=json.loads(responseindict)
+            response = responseindict["data"]
+            response = response["pageData"]
+            if not response:
+                break;
+            InventoryData.extend(response)
+            page = page + 1
+        except Exception as e:
+            print "Exception is:",str(e)
+    InventoryData = json.dumps(InventoryData)
+    return InventoryData
+
+def check_Device_Existance_In_Inventory(inventory_response,listOfIP):
+    try:
+        present=0;
+
+        loaded_inventory_response = json.loads(inventory_response)
+        #print loaded_inventory_response
+        ''' get total IP address set '''
+        device_json = jsonpath(loaded_inventory_response,
+                               "$..discoveredIpAddr")
+        #print len(device_json)
+        if device_json != False:
+            inventoryIPList={x for x in device_json}
+            print len(inventoryIPList)
+            MissingIPList=[]
+            for IP in listOfIP:
+                if IP in inventoryIPList:
+                    present=present+1
+                else:
+                    MissingIPList.append(IP)
+            return present,MissingIPList
+    except Exception as e:
+        print "Exception is :",str(e)
