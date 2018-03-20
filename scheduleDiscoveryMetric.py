@@ -45,28 +45,37 @@ def dumpOutput(IP,fileName):
 
 def outputSaveInLogFile(DeviceType,Data):
     global ScheduleStatus
-    logging.info("-----%s-------- ",DeviceType)
-    logging.info("CPU : Max: %s  Min : %s  Avg : %s", max(Data["CpuUsed"]), min(Data["CpuUsed"]),
-                 sum(Data["CpuUsed"]) / len(Data["CpuUsed"]))
-    logging.info("RAM : Max: %s  Min : %s  Avg : %s", max(Data["RamUsed"]), min(Data["RamUsed"]),
-                 sum(Data["RamUsed"]) / len(Data["RamUsed"]))
-    logging.info("SWAP : Max: %s  Min : %s  Avg : %s", max(Data["SwapUsed"]), min(Data["SwapUsed"]),
-                 sum(Data["SwapUsed"]) / len(Data["SwapUsed"]))
-    logging.info("LOAD : Max: %s  Min : %s  Avg : %s", max(Data["LoadAverage"]), min(Data["LoadAverage"]),
-                 sum(Data["LoadAverage"]) / len(Data["LoadAverage"]))
+    maxCPU= round(max(Data["CpuUsed"]),2)
+    minCPU= round(min(Data["CpuUsed"]),2)
+    avgCPU= round (sum(Data["CpuUsed"]) / len(Data["CpuUsed"]),2)
+    maxRAM = round(max(Data["RamUsed"])/1024/1024,2)
+    minRAM = round(min(Data["RamUsed"])/1024/1024,2)
+    avgRAM = round((sum(Data["RamUsed"]) / len(Data["RamUsed"]))/1024/1024,2)
+    maxSWAP = round(max(Data["SwapUsed"]) / 1024,2)
+    minSWAP = round(min(Data["SwapUsed"]) / 1024,2)
+    avgSWAP = round((sum(Data["SwapUsed"]) / len(Data["SwapUsed"])) / 1024,2)
+    maxLOAD = round(max(Data["LoadAverage"]),2)
+    minLOAD = round(min(Data["LoadAverage"]),2)
+    avgLOAD = round(sum(Data["LoadAverage"]) / len(Data["LoadAverage"]),2)
 
-    ScheduleStatus[DeviceType + " CPU MIN"]= round(min(Data["CpuUsed"]),2)
-    ScheduleStatus[DeviceType + " CPU MAX"] = round(max(Data["CpuUsed"]),2)
-    ScheduleStatus[DeviceType + " CPU AVG"] = round(sum(Data["CpuUsed"]) / len(Data["CpuUsed"]),2)
-    ScheduleStatus[DeviceType + " RAM MIN"] = round(min(Data["RamUsed"]),2)
-    ScheduleStatus[DeviceType + " RAM MAX"] = round(max(Data["RamUsed"]),2)
-    ScheduleStatus[DeviceType + " RAM AVG"] = round(sum(Data["RamUsed"]) / len(Data["RamUsed"]),2)
-    ScheduleStatus[DeviceType + " SWAP MIN"] = round(min(Data["SwapUsed"]),2)
-    ScheduleStatus[DeviceType + " SWAP MAX"] = round(max(Data["SwapUsed"]),2)
-    ScheduleStatus[DeviceType + " SWAP AVG"] = round(sum(Data["SwapUsed"]) / len(Data["SwapUsed"]),2)
-    ScheduleStatus[DeviceType + " LOAD MIN"] = round(min(Data["LoadAverage"]),2)
-    ScheduleStatus[DeviceType + " LOAD MAX"] = round(max(Data["LoadAverage"]),2)
-    ScheduleStatus[DeviceType + " LOAD AVG"] = round(sum(Data["LoadAverage"]) / len(Data["LoadAverage"]),2)
+    logging.info("-----%s-------- ",DeviceType)
+    logging.info("CPU : Max: %s  Min : %s  Avg : %s",maxCPU ,minCPU ,avgCPU)
+    logging.info("RAM : Max: %s  Min : %s  Avg : %s", maxRAM, minRAM,avgRAM)
+    logging.info("SWAP : Max: %s  Min : %s  Avg : %s", maxSWAP,minSWAP,avgSWAP)
+    logging.info("LOAD : Max: %s  Min : %s  Avg : %s", maxLOAD,minLOAD,avgLOAD)
+
+    ScheduleStatus[DeviceType + " CPU MIN"]= minCPU
+    ScheduleStatus[DeviceType + " CPU MAX"] = maxCPU
+    ScheduleStatus[DeviceType + " CPU AVG"] = avgCPU
+    ScheduleStatus[DeviceType + " RAM MIN"] = minRAM
+    ScheduleStatus[DeviceType + " RAM MAX"] = maxRAM
+    ScheduleStatus[DeviceType + " RAM AVG"] = avgRAM
+    ScheduleStatus[DeviceType + " SWAP MIN"] = minSWAP
+    ScheduleStatus[DeviceType + " SWAP MAX"] = maxSWAP
+    ScheduleStatus[DeviceType + " SWAP AVG"] = avgSWAP
+    ScheduleStatus[DeviceType + " LOAD MIN"] = minLOAD
+    ScheduleStatus[DeviceType + " LOAD MAX"] = maxLOAD
+    ScheduleStatus[DeviceType + " LOAD AVG"] = avgLOAD
 
 
 def devicePresenceInInventory(Token,Org,Site,listOfIPs,NumberOfTime):
@@ -96,6 +105,7 @@ NCE_IPOutput = "172.16.2.112Output.txt"
 NCE_W1Output = "172.16.2.113Output.txt"
 NCE_W2Output = "172.16.2.114Output.txt"
 DC_IPOutput = "172.16.2.115Output.txt"
+
 SiteName= "US"
 outputFileName="Discovery.xlsx"
 outputLogFile="discovery.log"
@@ -116,7 +126,7 @@ fieldnames = {'DeviceCount':1, 'DiscoveryCompletionTime':2,'NoOfDeviceInventory0
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 
 #Generation of Ordered list containing numberof devices and start/end IP
-numberofdeviceList=[100,200,300,400,500,750,1000,1200,1500]
+numberofdeviceList=[100,200,300,400,500,750,1000,1200,1500,2000,2500,3000]
 discoveryList=collections.OrderedDict()
 newStartIP="10.50.1.1"
 for deviceCount in numberofdeviceList:
@@ -124,6 +134,7 @@ for deviceCount in numberofdeviceList:
         startIP=newStartIP;
         discoveryInput,newStartIP=UserfulFunction.returnRangestartEndIP(startIP,deviceCount)
         discoveryList[deviceCount]=discoveryInput;
+        logging.info("%s===============================%s", str(deviceCount), startIP)
     except Exception as e:
         print str(e)
 
@@ -171,6 +182,7 @@ for deviceCount, discoveryInput in discoveryList.items():
         requestPayload=json.dumps(requestPayload)
 
         response= RequiredAPI.schedule_discovery(NCE_IP,Token,Org,Site,requestPayload)
+        logging.info("DeviceCount: %s and RequestID: %s", str(deviceCount),response)
         numberofSecond=0;
         while True:
             try:
