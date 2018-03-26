@@ -126,7 +126,7 @@ fieldnames = {'DeviceCount':1, 'DiscoveryCompletionTime':2,'NoOfDeviceInventory0
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 
 #Generation of Ordered list containing numberof devices and start/end IP
-numberofdeviceList=[100,200,300,400,500,750,1000,1200,1500,2000,2500,3000]
+numberofdeviceList=[1000,1200,1500,2000,2500,3000,100,200,300,400,500,750]
 discoveryList=collections.OrderedDict()
 newStartIP="10.50.1.1"
 for deviceCount in numberofdeviceList:
@@ -198,13 +198,18 @@ for deviceCount, discoveryInput in discoveryList.items():
                     requestPayload=None
                     break;
                 #if inprogress percent remain 99 for next 10 min then break
-                if inprogressPercent >= 98.50 and  num == 5:
+                time.sleep(120)
+                numberofSecond = numberofSecond + 120
+                if inprogressPercent >= 98.50 and num == 5:
                     requestPayload = None
+                    try:
+                        res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
+                    except Exception as e:
+                        print "Exception is :" + str(e)
                     break;
                 else:
                     num = num + 1
-                time.sleep(120)
-                numberofSecond = numberofSecond + 120
+
                 if value == 1 and (numberofSecond/60) > 80 :
                     try:
                         res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
