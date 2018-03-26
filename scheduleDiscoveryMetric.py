@@ -184,6 +184,7 @@ for deviceCount, discoveryInput in discoveryList.items():
         response= RequiredAPI.schedule_discovery(NCE_IP,Token,Org,Site,requestPayload)
         logging.info("DeviceCount: %s and RequestID: %s", str(deviceCount),response)
         numberofSecond=0;
+        num=0
         while True:
             try:
                 #Dump top output and take cppu,load,ram,swap
@@ -191,13 +192,20 @@ for deviceCount, discoveryInput in discoveryList.items():
                 dumpOutput(NCE_W1, NCE_W1Output)
                 dumpOutput(NCE_W2, NCE_W2Output)
                 dumpOutput(DC_IP, DC_IPOutput)
-                value,requestId = RequiredAPI.get_all_scheduledDiscoveryRequest(NCE_IP,Token,Org,Site,"NETWORK_DISCOVERY")
-                if value == 0:
+                value,requestId,inprogressPercent = RequiredAPI.get_all_scheduledDiscoveryRequest(NCE_IP,Token,Org,Site,"NETWORK_DISCOVERY")
+                #if request not present breal the loop
+                if value == 0 :
                     requestPayload=None
                     break;
+                #if inprogress percent remain 99 for next 10 min then break
+                if inprogressPercent >= 98.50 and  num == 5:
+                    requestPayload = None
+                    break;
+                else:
+                    num = num + 1
                 time.sleep(120)
                 numberofSecond = numberofSecond + 120
-                if value == 1 and (numberofSecond/60) > 60 :
+                if value == 1 and (numberofSecond/60) > 80 :
                     try:
                         res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
                     except Exception as e:

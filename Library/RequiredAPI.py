@@ -66,9 +66,9 @@ def get_all_scheduledDiscoveryRequest(NCE_IP,token, orgId, siteId,typeOfRequest)
     responseindict = json.loads(API.sendGETRequest(url, token, orgId, siteId))
     response = int(responseindict["data"]["pageInfo"]["totalRecords"])
     if response == 0:
-        return response,None
+        return response,None,None
     else:
-        return response,responseindict["data"]["pageData"][0]["requestId"]
+        return response,responseindict["data"]["pageData"][0]["requestId"],responseindict["data"]["pageData"][0]["progressStatus"]
 
 deleteRequestURL="/api/v2/dataCollector/schedule/"
 def deleteRequest(NCE_IP,token, orgId, siteId,requestID):
