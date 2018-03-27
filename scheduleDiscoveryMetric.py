@@ -126,9 +126,9 @@ fieldnames = {'DeviceCount':1, 'DiscoveryCompletionTime':2,'NoOfDeviceInventory0
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
 
 #Generation of Ordered list containing numberof devices and start/end IP
-numberofdeviceList=[1000,1200,1500,2000,2500,3000]
+numberofdeviceList=[100,200,300,400,500,750,1000,1200,1500,2000,2500,3000]
 discoveryList=collections.OrderedDict()
-newStartIP="10.50.4.236"
+newStartIP="10.50.1.1"
 for deviceCount in numberofdeviceList:
     try:
         startIP=newStartIP;
