@@ -9,8 +9,8 @@ def returnRangestartEndIP(startIP,deviceCount):
         discoveryInput = {}
         listOfIP=[]
         count = 1
-        for thirdIndex in range(third_index, 256):
-            for fourthIndex in range(fourth_index, 256):
+        for thirdIndex in range(third_index, 255):
+            for fourthIndex in range(fourth_index, 255):
                 ip_Address = str(startIpList[0]) + "." + str(startIpList[1]) + "." + str(thirdIndex) + "." + str(fourthIndex);
                 if count == 1:
                     discoveryInput["startIP"] = ip_Address
@@ -19,7 +19,7 @@ def returnRangestartEndIP(startIP,deviceCount):
                 if count > int(deviceCount):
                     newStartPoint = ip_Address
                     break;
-                elif fourthIndex == 255:
+                elif fourthIndex == 254:
                     fourth_index = 1
                 listOfIP.append(ip_Address)
                 count = count + 1
