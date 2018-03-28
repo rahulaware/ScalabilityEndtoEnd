@@ -89,12 +89,12 @@ def devicePresenceInInventory(Token,Org,Site,listOfIPs,NumberOfTime):
         PassPercent = round((NumberofPresentDevices * 100) / float(len(listOfIPs)),2)
         logging.info("Pass Percent: %s", str(PassPercent))
         logging.info("Fail Percent: %s", str(100-PassPercent))
-        ScheduleStatus["NoOfDeviceInventoryAfter" + str(NumberOfTime*2)] = str(NumberofPresentDevices)
-        ScheduleStatus["Passed%InventoryStatus"+ str(NumberOfTime*2)]= str(PassPercent)
-        ScheduleStatus["NoOfDeviceInventoryAfter" + str(NumberOfTime * 2)] = str(NumberofPresentDevices)
-        ScheduleStatus["Passed%InventoryStatus" + str(NumberOfTime * 2)] = str(PassPercent)
-        ScheduleStatus["NoOfDeviceInventoryAfter" + str(NumberOfTime * 2)] = str(NumberofPresentDevices)
-        ScheduleStatus["Passed%InventoryStatus" + str(NumberOfTime * 2)] = str(PassPercent)
+        ScheduleStatus["NoOfDeviceInventory" + str(NumberOfTime-1)] = str(NumberofPresentDevices)
+        ScheduleStatus["Passed%InventoryStatus"+ str(NumberOfTime-1)]= str(PassPercent)
+        ScheduleStatus["NoOfDeviceInventory" + str(NumberOfTime-1)] = str(NumberofPresentDevices)
+        ScheduleStatus["Passed%InventoryStatus" + str(NumberOfTime-1)] = str(PassPercent)
+        ScheduleStatus["NoOfDeviceInventory" + str(NumberOfTime-1)] = str(NumberofPresentDevices)
+        ScheduleStatus["Passed%InventoryStatus" + str(NumberOfTime-1)] = str(PassPercent)
         if MissingList:
             logging.info("MissingList Devices: %s", str(MissingList))
         return PassPercent
@@ -232,10 +232,10 @@ for deviceCount, discoveryInput in discoveryList.items():
         while True:
             try:
                 #Dump top output and take cppu,load,ram,swap
-                dumpOutput(NCE_IP, NCE_IPOutput)
-                dumpOutput(NCE_W1, NCE_W1Output)
-                dumpOutput(NCE_W2, NCE_W2Output)
-                dumpOutput(DC_IP, DC_IPOutput)
+                # dumpOutput(NCE_IP, NCE_IPOutput)
+                # dumpOutput(NCE_W1, NCE_W1Output)
+                # dumpOutput(NCE_W2, NCE_W2Output)
+                # dumpOutput(DC_IP, DC_IPOutput)
                 value,requestId,inprogressPercent = RequiredAPI.get_all_scheduledDiscoveryRequest(NCE_IP,Token,Org,Site,"NETWORK_DISCOVERY")
                 #if request not present breal the loop
                 if value == 0 :
