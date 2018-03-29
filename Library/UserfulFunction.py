@@ -79,16 +79,17 @@ def CreateandStoreOutputCSVFile(filename,fieldnames,Output):
 
 from openpyxl import load_workbook
 import string
-def StoreOutputInExcelColumnwise(filename,fieldnames,Output):
+def StoreOutputInExcelColumnwise(filename,fieldnames,Output,sheetName):
     try:
         Excel = load_workbook(filename=filename)
-        SiteSheet = Excel["Sheet1"]
+        SiteSheet = Excel[sheetName]
         for letter in string.ascii_uppercase:
             if (SiteSheet[letter + "1"]).value == None:
                 break;
         print letter
         for key in Output:
-            SiteSheet[letter + str(fieldnames[key])] = Output[key]
+            if key in fieldnames.keys():
+                SiteSheet[letter + str(fieldnames[key])] = Output[key]
         Excel.save(filename)
     except Exception as e:
         print "Exception is :"+str(e)

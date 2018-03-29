@@ -128,10 +128,15 @@ fieldnames = {'DeviceCount':1, 'DiscoveryCompletionTime':2,'NoOfDeviceInventory0
               'NCEW2 CPU MAX':49,'NCEW2 CPU AVG':50,'NCEW2 RAM MIN':51,'NCEW2 RAM MAX':52,\
               'NCEW2 RAM AVG':53,'NCEW2 SWAP MIN':54,'NCEW2 SWAP MAX':55,'NCEW2 SWAP AVG':56,'Failure Reason':57}
 
-outputFileName1="Discovery.csv"
-fieldNamesCSV=['DeviceCount','InventoryStatus 2 min','InventoryStatus 4 min',
-               'InventoryStatus 6 min','InventoryStatus 8 min','InventoryStatus 10 min','InventoryStatus 12 min',
-               'InventoryStatus 14 min','InventoryStatus 16 min','InventoryStatus 18 min','InventoryStatus 20 min']
+fieldNamesCSV={'DeviceCount':1,'InventoryStatus 2 min':2,'InventoryStatus 4 min':3,
+               'InventoryStatus 6 min':4,'InventoryStatus 8 min':5,'InventoryStatus 10 min':6,'InventoryStatus 12 min':7,
+               'InventoryStatus 14 min':8,'InventoryStatus 16 min':9,'InventoryStatus 18 min':10,'InventoryStatus 20 min':11,
+               'InventoryStatus 22 min':12, 'InventoryStatus 24 min':13, 'InventoryStatus 26 min':14, 'InventoryStatus 28 min':15,
+               'InventoryStatus 30 min':16, 'InventoryStatus 32 min':17,'InventoryStatus 34 min':18,'InventoryStatus 36 min':19,
+               'InventoryStatus 38 min':20,'InventoryStatus 40 min':21, 'InventoryStatus 42 min':22,
+               'InventoryStatus 44 min':23, 'InventoryStatus 46 min':24, 'InventoryStatus 48 min':25, 'InventoryStatus 50 min':26,
+               'InventoryStatus 52 min':27, 'InventoryStatus 54 min':28, 'InventoryStatus 56 min':29, 'InventoryStatus 58 min':30,
+               'InventoryStatus 60 min':31}
 
 #Generation of Ordered list containing numberof devices and start/end IP
 numberofdeviceList=[100,200,300,400,500,750,1000,1200,1500,2000,2500,3000]
@@ -159,9 +164,7 @@ for deviceCount, discoveryInput in discoveryList.items():
     totalTime=0
     passpercentList = []
     ScheduleStatus={}
-    ScheduleInventoryStatus = {}
     ScheduleStatus["DeviceCount"]= deviceCount
-    ScheduleInventoryStatus["DeviceCount"]=deviceCount
 
     NCETopOutput = {"LoadAverage": [], "CpuUsed": [], "RamUsed": [], "SwapUsed": []}
     NCE1TopOutput = {"LoadAverage": [], "CpuUsed": [], "RamUsed": [], "SwapUsed": []}
@@ -208,14 +211,14 @@ for deviceCount, discoveryInput in discoveryList.items():
             time.sleep(120)
             totalTime=totalTime+120
             PassPercent = devicePresenceInInventory(Token, Org, Site, listOfIPs, NumberOfTime)
-            ScheduleInventoryStatus["InventoryStatus %s min"%str(NumberOfTime * 2)] = str(PassPercent)
+            ScheduleStatus["InventoryStatus %s min"%str(NumberOfTime * 2)] = str(PassPercent)
             passpercentList.append(PassPercent)
             NumberOfTime = NumberOfTime + 1
             if PassPercent >= 100:
                 break;
-            if len(passpercentList) >=3 and (passpercentList[-1]==passpercentList[-2]==passpercentList[-3]):
+            if len(passpercentList) >=3 and (passpercentList[-1]==passpercentList[-2]==passpercentList[-3]!=0):
                 break
-            if NumberOfTime==11:
+            if NumberOfTime==31:
                 break
 
         outputSaveInLogFile("NCE", NCETopOutput)
@@ -224,8 +227,6 @@ for deviceCount, discoveryInput in discoveryList.items():
         outputSaveInLogFile("DC", DCTopOutput)
         logging.info("Data is ---------")
         logging.info("Data is : %s",ScheduleStatus)
-        logging.info("Minute Based Data is ---------")
-        logging.info("Data is : %s",ScheduleInventoryStatus)
 
         num=0
         discoveryCompletionStatus=""
@@ -269,7 +270,8 @@ for deviceCount, discoveryInput in discoveryList.items():
         logging.info("Completion Time :%s", str(totalTime/60))
         logging.info("Completion Status :%s", discoveryCompletionStatus)
         ScheduleStatus["DiscoveryCompletionTime"] = str(totalTime/60)
-        UserfulFunction.CreateandStoreOutputCSVFile(outputFileName1,fieldNamesCSV,ScheduleInventoryStatus)
-        UserfulFunction.StoreOutputInExcelColumnwise(outputFileName,fieldnames,ScheduleStatus)
+        #UserfulFunction.CreateandStoreOutputCSVFile(outputFileName,fieldNamesCSV,ScheduleStatus)
+        UserfulFunction.StoreOutputInExcelColumnwise(outputFileName,fieldnames,ScheduleStatus,"Sheet1")
+        UserfulFunction.StoreOutputInExcelColumnwise(outputFileName, fieldNamesCSV, ScheduleStatus,"Sheet2")
     except Exception as e:
         logging.info("Exception : %s",str(e))
