@@ -95,9 +95,12 @@ for input in inputs:
                 print "Request successful with for "+typeOfDevice+" "+str(input["mask"])
                 break;
             if value == 1 and (numberofSecond/60) > 20 :
-                res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
-                print "Request is deleted for "+typeOfDevice+" "+str(input["mask"])
-                break;
+                try:
+                    res= RequiredAPI.deleteRequest(NCE_IP,Token,Org,Site,requestId)
+                    print "Request is deleted for "+typeOfDevice+" "+str(input["mask"])
+                    break;
+                except Exception as e:
+                     print e
         isExist = RequiredAPI.get_all_matchingDevices(NCE_IP, Token, Org, Site,typeOfDevice)
         if isExist > 0:
             print "devices are exist in inventory" + typeOfDevice + " " + str(input["mask"])
