@@ -16,10 +16,10 @@ username = 'root'
 password = 'FixStream'
 NCE_W1 = "172.16.2.113"
 NCE_W2 = "172.16.2.114"
-NCE_IPOutput = "172.16.2.112INDOutput.txt"
-NCE_W1Output = "172.16.2.113INDOutput.txt"
-NCE_W2Output = "172.16.2.114INDOutput.txt"
-DC_IPOutput = "172.16.2.116INDOutput.txt"
+NCE_IPOutput = "172.16.2.112INDOutputPerf.txt"
+NCE_W1Output = "172.16.2.113INDOutputPerf.txt"
+NCE_W2Output = "172.16.2.114INDOutputPerf.txt"
+DC_IPOutput = "172.16.2.116INDOutputPerf.txt"
 
 Database_IP="172.16.5.176"
 databaseName="Scalability"
