@@ -254,7 +254,7 @@ def getscheduledDevicesForPerformance(NCE_IP,token,orgId, siteId, requestID):
 
 getPerformancedatafordeviceURL='/api/v2/metrics/server/timeSeries'
 def getPerformancedatafordevice(NCE_IP,token,orgId, siteId, deviceID,metricName,instanceType,instanceName):
-    appendString='?days=3&deviceId='+deviceID+'&instanceName='+instanceName+'&instanceType='+instanceType+'&metricGroup='+metricName+'&rollup=1&type=server'
+    appendString='?days=7&deviceId='+deviceID+'&instanceName='+instanceName+'&instanceType='+instanceType+'&metricGroup='+metricName+'&rollup=1&type=server'
     getscheduledDevicesURL1 = "https://"+NCE_IP + getPerformancedatafordeviceURL + appendString
     discovery_response = json.loads(API.sendGETRequest(getscheduledDevicesURL1,token, orgId, siteId))
     discovery_response=  discovery_response["data"]

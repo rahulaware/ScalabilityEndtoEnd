@@ -52,7 +52,7 @@ def findMissedCycleInDC(request_id1,NumberofDevices,expectedCycleperDevice,DCIPT
                     stdin, stdout, stderr = ssh.exec_command(
                         "zgrep %s /opt/meridian/dc/var/fsdc/logs/_dc_serverPerf_response* | grep '\"%s\"'" % (request_id, ip[0]))
                     NumberofCycle = len(stdout.readlines())
-                    if NumberofCycle != expectedCycleperDevice:
+                    if NumberofCycle != expectedCycleperDevice and NumberofCycle != 0:
                         NumberofDevicewithMissedCycle = NumberofDevicewithMissedCycle + 1
                         logging.info(ip[0] + "*********" + str(NumberofCycle))
                         NumberofMissedCycle = NumberofMissedCycle + (expectedCycleperDevice-NumberofCycle)
