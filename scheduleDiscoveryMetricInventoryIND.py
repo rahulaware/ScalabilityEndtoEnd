@@ -104,16 +104,17 @@ def devicePresenceInInventory(Token,Org,Site,listOfIPs,NumberOfTime):
 NCE_IP = "172.16.2.112"
 NCE_W1 = "172.16.2.113"
 NCE_W2 = "172.16.2.114"
-DC_IP = "172.16.2.115"
-NCE_IPOutput = "172.16.2.112Output.txt"
-NCE_W1Output = "172.16.2.113Output.txt"
-NCE_W2Output = "172.16.2.114Output.txt"
-DC_IPOutput = "172.16.2.115Output.txt"
+DC_IP = "172.16.2.116"
 
-SiteName= "US"
-outputLogFile="discoveryUS.log"
+NCE_IPOutput = "172.16.2.112INDOutput.txt"
+NCE_W1Output = "172.16.2.113INDOutput.txt"
+NCE_W2Output = "172.16.2.114INDOutput.txt"
+DC_IPOutput = "172.16.2.116INDOutput.txt"
+
+SiteName= "IND"
+outputLogFile="discoveryIND.log"
 logging.basicConfig(filename=outputLogFile, level=logging.INFO, format='')
-outputFileName="DiscoveryUS.xlsx"
+outputFileName="DiscoveryIND.xlsx"
 
 fieldnames = {'DeviceCount':1, 'DiscoveryCompletionTime':2,'NoOfDeviceInventory0':3,'Passed%InventoryStatus0':4,'NoOfDeviceInventory1':5,\
               'Passed%InventoryStatus1':6,'NoOfDeviceInventory2':7,'Passed%InventoryStatus2':8,'NCE LOAD MIN':9,\
@@ -141,7 +142,7 @@ fieldNamesCSV={'DeviceCount':1,'InventoryStatus 2 min':2,'InventoryStatus 4 min'
 #Generation of Ordered list containing numberof devices and start/end IP
 numberofdeviceList=[100,200,300,400,500,750,1000,1200,1500,2000,2500,3000]
 discoveryList=collections.OrderedDict()
-newStartIP="10.50.1.1"
+newStartIP="10.50.101.1"
 for deviceCount in numberofdeviceList:
     try:
         startIP=newStartIP;
