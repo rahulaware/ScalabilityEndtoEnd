@@ -106,21 +106,23 @@ def get_all_discovered_and_unscheduled_compute_devices(NCE_IP,token,orgId, siteI
     response = json.dumps(response)
     return response
 
-def scheduleServerFlow(response,interval,NumberOfDevices,NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time):
+def selectDevices(response,NumberOfDevices):
     import json
     devices = json.loads(response);
     requiredList = [];
-    count=0;
+    count = 0;
     for device in devices:
         temp = {};
         temp["deviceId"] = device["deviceId"];
         temp["ip"] = device["discoveredIpAddr"];
         temp["fqdn"] = device["fqdn"];
         requiredList.append(temp);
-        count = count+1;
+        count = count + 1;
         if count == int(NumberOfDevices):
             break;
-    #print len(requiredList),requiredList
+    return requiredList;
+
+def scheduleServerFlow(requiredList,interval,NumberOfDevices,NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time):
 
     requestPayload = {
         "ipPool": {
@@ -153,23 +155,6 @@ def scheduleServerFlow(response,interval,NumberOfDevices,NCE_IP,token,orgId, sit
     import re
     m = re.search(r"\[([A-Za-z0-9_-]+)\]", response)
     return m.group(1)
-
-
-def selectDevices(response,NumberOfDevices):
-    import json
-    devices = json.loads(response);
-    requiredList = [];
-    count = 0;
-    for device in devices:
-        temp = {};
-        temp["deviceId"] = device["deviceId"];
-        temp["ip"] = device["discoveredIpAddr"];
-        temp["fqdn"] = device["fqdn"];
-        requiredList.append(temp);
-        count = count + 1;
-        if count == int(NumberOfDevices):
-            break;
-    return requiredList;
 
 
 def schedulePerformance(requiredList,interval,NumberOfDevices,NCE_IP,token,orgId, siteId,schedule_start_date,schedule_start_time,schedule_end_date,schedule_end_time):
