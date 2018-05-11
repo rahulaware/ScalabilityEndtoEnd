@@ -32,10 +32,15 @@ def returnRangestartEndIP(startIP,deviceCount):
         return False,False;
 
 
-def topCommandOutput(linuxServer,username,password):
+def topCommandOutput(linuxServer=None,username=None,password=None):
     try:
-        direct_output = subprocess.check_output(
-            "sshpass -p %s ssh %s@%s 'top -b -n 1| head -n 20'" % (password, username, linuxServer),
+
+        if linuxServer == None:
+            direct_output = subprocess.check_output(
+                "'top -b -n 1| head -n 20'",shell=True)
+        else:
+            direct_output = subprocess.check_output(
+                "sshpass -p %s ssh %s@%s 'top -b -n 1| head -n 20'" % (password, username, linuxServer),
             shell=True)
         return direct_output
     except Exception as e:
@@ -57,6 +62,70 @@ def parsedCPURAMLOADSWAPFromTopOutput(topOutput):
         return topParamter
     except Exception as e:
         print "Exception is :",str(e)
+
+    def topCommandOutputRemoteorLocal(linuxServer=None, username=None, password=None):
+        try:
+
+            if linuxServer == None:
+                direct_output = subprocess.check_output(
+                    "'top -b -n 1| head -n 20'", shell=True)
+            else:
+                direct_output = subprocess.check_output(
+                    "sshpass -p %s ssh %s@%s 'top -b -n 1| head -n 20'" % (password, username, linuxServer),
+                    shell=True)
+            return direct_output
+        except Exception as e:
+            print "Exception is :", str(e)
+            return False
+
+    def parsedCPURAMLOADSWAPFromTopOutputRemoteorLocal(topOutput):
+        topParamter = {}
+        try:
+            for value in topOutput.splitlines():
+                if "load average:" in value:
+                    topParamter["LoadAverage"] = float(str(value.split("load average:")[1]).split(",")[0])
+                if "Cpu(s):" in value:
+                    topParamter["CpuUsed"] = float((value.split("%us")[0]).split(":")[1])
+                if "Mem:" in value:
+                    topParamter["RamUsed"] = float((value.split("k used")[0]).split(",")[1])
+                if "Swap:" in value:
+                    topParamter["SwapUsed"] = float((value.split("k used")[0]).split(",")[1])
+            return topParamter
+        except Exception as e:
+            print "Exception is :", str(e)
+
+        # This funtion dumps parsed command ouput of top command
+        def dumpCPURAMSWAPLOADToList(IP,):
+            try:
+                global NCETopOutput, NCE1TopOutput, NCE2TopOutput, DCTopOutput, NCE_IP, NCE_W1, NCE_W2, DC_IP
+                with open(fileName, "a") as fh:
+                    top_output = topCommandOutputRemoteorLocal(IP, "root", "FixStream")
+                    topParamter = UserfulFunction.parsedCPURAMLOADSWAPFromTopOutput(top_output)
+                    if (IP == NCE_IP):
+                        (NCETopOutput["LoadAverage"]).append(topParamter["LoadAverage"])
+                        (NCETopOutput["CpuUsed"]).append(topParamter["CpuUsed"])
+                        (NCETopOutput["RamUsed"]).append(topParamter["RamUsed"])
+                        (NCETopOutput["SwapUsed"]).append(topParamter["SwapUsed"])
+                    if (IP == NCE_W1):
+                        (NCE1TopOutput["LoadAverage"]).append(topParamter["LoadAverage"])
+                        (NCE1TopOutput["CpuUsed"]).append(topParamter["CpuUsed"])
+                        (NCE1TopOutput["RamUsed"]).append(topParamter["RamUsed"])
+                        (NCE1TopOutput["SwapUsed"]).append(topParamter["SwapUsed"])
+                    if (IP == NCE_W2):
+                        (NCE2TopOutput["LoadAverage"]).append(topParamter["LoadAverage"])
+                        (NCE2TopOutput["CpuUsed"]).append(topParamter["CpuUsed"])
+                        (NCE2TopOutput["RamUsed"]).append(topParamter["RamUsed"])
+                        (NCE2TopOutput["SwapUsed"]).append(topParamter["SwapUsed"])
+                    if (IP == DC_IP):
+                        (DCTopOutput["LoadAverage"]).append(topParamter["LoadAverage"])
+                        (DCTopOutput["CpuUsed"]).append(topParamter["CpuUsed"])
+                        (DCTopOutput["RamUsed"]).append(topParamter["RamUsed"])
+                        (DCTopOutput["SwapUsed"]).append(topParamter["SwapUsed"])
+                    fh.write(top_output)
+                    fh.write("----------------------------------------------------------------------------\n")
+            except Exception as e:
+                print "Exception is :" + str(e)
+
 
 #CSV Report Generation ROW By ROW
 '''fieldnames = ['DeviceCount', 'DiscoveryCompletionTime','NoOfDeviceInventory0','PassedInventoryStatus0','NoOfDeviceInventory1',\

@@ -35,9 +35,7 @@ def DumptoCSV(row):
     if os.path.isfile(csvfileName):
         iscreated = True
     with open(csvfileName, 'a') as csvfile:
-        fieldnames=['Vcenter', 'NCE CPU', 'NCE RAM GB', 'NCE LOAD', 'NCE SWAP MB', 'NCE1 CPU', 'NCE1 RAM GB', 'NCE1 LOAD',
-         'NCE1 SWAP MB', 'NCE2 CPU', 'NCE2 RAM GB', 'NCE2 LOAD', 'NCE2 SWAP MB', 'DC CPU', 'DC RAM GB', 'DC LOAD',
-         'DC SWAP MB','CompletionTime']
+        fieldnames=['Time','deviceIP','CPU MAX', 'CPU MIN', 'CPU AVG','RAM MAX GB', 'RAM MIN GB', 'RAM AVG GB','LOAD MAX', 'LOAD MIN', 'LOAD AVG','SWAP MAX MB', 'SWAP MIN MB', 'SWAP AVG MB' ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         if iscreated == False:
             writer.writeheader()
@@ -75,26 +73,6 @@ startDump(deviceIP, DC_IPOutput)
 
 logging.info("*************************Schedule Discovery with %s Result*******************", str(deviceIP))
 try:
-    # requestPayload = {"scheduleInfo": {"recurrence": "NOW", "recurrenceMin": "", "scheduleDate": "", "scheduleTime": "",
-    #                                    "recurrenceHour": "", "scheduleTimeAMPM": "", "scheduleEndDate": "",
-    #                                    "scheduleEndTime": "", "scheduleEndTimeAMPM": ""}, "resetCredentials": False,
-    #                   "triggerType": "NETWORK_DISCOVERY", "communityStringInfo": [],
-    #                   "ipPool": {"fqdnAddress": [{"ip":"192.168.128.9","fqdn":""}], "ipRange": [{"ipAddressFrom": "", "ipAddressTo": ""}],
-    #                              "maskRange": []}, "discoveredDeviceType": "True", "dsSelectedOrganization": "#",
-    #                   "requestName": "", "authList": [
-    #         {"username": "nonroot@vsphere.local", "api": True, "ssh": "", "jumpServer": "", "windows": "", "jumpServeripAddress": "",
-    #          "password": "FixStream123!", "apiType": "PYSPHERE", "userProfile": "", "telnet": "", "sshkey": ""}],
-    #                   "enabledPasswordList": [{"enablePassword": ""}],
-    #                   "applicationProperties:q"
-    #                   "": {"openstackDetails": []}, "dsSelectedSiteId": "*"}
-    # requestPayload["requestName"]=deviceCount
-    # requestPayload["dsSelectedSiteId"]=Site
-    # requestPayload["dsSelectedOrganization"]=Org
-    # requestPayload=json.dumps(requestPayload)
-    #
-    # response= RequiredAPI.schedule_discovery(NCE_IP,Token,Org,Site,requestPayload)
-    # logging.info("DeviceCount: %s and RequestID: %s", str(deviceCount),response)
-
     rowCSV={}
     rowCSV["Vcenter"]=deviceIP
     DumptoCSV(rowCSV)
